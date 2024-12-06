@@ -49,6 +49,33 @@ func solvePart1(input []string) interface{} {
 }
 
 func solvePart2(input []string) interface{} {
-	// TODO: Implement part 2 solution
-	return nil
+	var list1, list2 []int
+	for _, line := range input {
+		numbers := strings.Split(line, "   ")
+		number1, err := strconv.Atoi(numbers[0])
+		if err != nil {
+			return err
+		}
+
+		number2, err := strconv.Atoi(numbers[1])
+		if err != nil {
+			return err
+		}
+
+		list1 = append(list1, number1)
+		list2 = append(list2, number2)
+	}
+
+	var ss int
+	for _, v := range list1 {
+		var n int
+		for _, v2 := range list2 {
+			if v == v2 {
+				n++
+			}
+		}
+		ss += v * n
+	}
+
+	return ss
 }
