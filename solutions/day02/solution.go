@@ -53,5 +53,61 @@ func solvePart1(input []string) interface{} {
 }
 
 func solvePart2(input []string) interface{} {
-	return nil
+	var safe int
+	for _, v := range input {
+		reportStrs := strings.Split(v, " ")
+		report := make([]int, len(reportStrs))
+		for j, s := range reportStrs {
+			i, err := strconv.Atoi(s)
+			if err != nil {
+				panic(err)
+			}
+			report[j] = i
+		}
+
+		if reportIsSafe(report) {
+			safe++
+		} else {
+			for k := range report {
+				var reportCpy []int
+				for l := range report {
+					if l == k {
+						continue
+					}
+					reportCpy = append(reportCpy, report[l])
+				}
+				if reportIsSafe(reportCpy) {
+					safe++
+					break
+				}
+			}
+		}
+	}
+
+	return safe
+}
+
+func reportIsSafe(report []int) bool {
+	inc := report[1] > report[0]
+	for i := range report {
+		if i == len(report)-1 {
+			return true
+		}
+		current := report[i]
+		next := report[i+1]
+
+		if inc && next < current {
+			return false
+		}
+
+		if !inc && next > current {
+			return false
+		}
+
+		diff := math.Abs(float64(current - next))
+		if diff < 1 || diff > 3 {
+			return false
+		}
+	}
+	return false
 }
