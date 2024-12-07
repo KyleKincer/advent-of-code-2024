@@ -6,6 +6,7 @@ import (
 	"advent2024/solutions/day03"
 	"advent2024/solutions/day04"
 	"advent2024/solutions/day05"
+	"advent2024/solutions/day06"
 	"fmt"
 )
 
@@ -29,4 +30,8 @@ func main() {
 	// Day 5
 	part1, part2 = day05.Solve()
 	fmt.Printf("Day 5:\n  Part 1: %v\n  Part 2: %v\n", part1, part2)
+
+	// Day 6
+	part1, part2 = day06.Solve()
+	fmt.Printf("Day 6:\n  Part 1: %v\n  Part 2: %v\n", part1, part2)
 }
