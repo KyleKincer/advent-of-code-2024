@@ -53,16 +53,24 @@ func NewUpdate(s string) *Update {
 	}
 }
 
-func (u *Update) ruleApplies(r *Rule) bool {
+func (u Update) ruleApplies(r *Rule) bool {
 	return slices.Contains(u.pages, r.first) && slices.Contains(u.pages, r.second)
 }
 
-func (u *Update) rulePasses(r *Rule) bool {
+func (u Update) rulePasses(r *Rule) bool {
 	return slices.Index(u.pages, r.first) < slices.Index(u.pages, r.second)
 }
 
-func (u *Update) getMiddlePage() int {
+func (u Update) getMiddlePage() int {
 	return u.pages[int(len(u.pages)/2)]
+}
+
+func (u *Update) updateForRule(rule *Rule) {
+	firstIndex := slices.Index(u.pages, rule.first)
+	secondIndex := slices.Index(u.pages, rule.second)
+
+	u.pages = slices.Delete(u.pages, secondIndex, secondIndex+1)
+	u.pages = slices.Insert(u.pages, firstIndex, rule.second)
 }
 
 func solvePart1(input []string) interface{} {
@@ -104,5 +112,39 @@ func solvePart1(input []string) interface{} {
 }
 
 func solvePart2(input []string) interface{} {
-	return nil
+	var rules []*Rule
+	var updates []*Update
+	for _, l := range input {
+		if strings.Contains(l, "|") {
+			rules = append(rules, NewRule(l))
+		}
+
+		if strings.Contains(l, ",") {
+			updates = append(updates, NewUpdate(l))
+		}
+	}
+
+	var corrected []Update
+	for _, update := range updates {
+		fixed := false
+		for _, rule := range rules {
+			if !update.ruleApplies(rule) {
+				continue
+			}
+
+			if !update.rulePasses(rule) {
+				update.updateForRule(rule)
+				fixed = true
+			}
+		}
+		if fixed {
+			corrected = append(corrected, *update)
+		}
+	}
+
+	var sum int
+	for _, update := range corrected {
+		sum += update.getMiddlePage()
+	}
+	return sum
 }
