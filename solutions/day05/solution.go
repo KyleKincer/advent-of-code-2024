@@ -3,6 +3,7 @@ package day05
 import (
 	"advent2024/utils"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -66,11 +67,30 @@ func (u Update) getMiddlePage() int {
 }
 
 func (u *Update) updateForRule(rule *Rule) {
-	firstIndex := slices.Index(u.pages, rule.first)
-	secondIndex := slices.Index(u.pages, rule.second)
+	sort.Slice(u.pages, func(i, j int) bool {
+		if u.pages[i] == rule.first && u.pages[j] == rule.second {
+			return true
+		}
+		if u.pages[i] == rule.second && u.pages[j] == rule.first {
+			return false
+		}
 
-	u.pages = slices.Delete(u.pages, secondIndex, secondIndex+1)
-	u.pages = slices.Insert(u.pages, firstIndex, rule.second)
+		return i < j
+	})
+}
+
+func (u *Update) updateForAllRules(rules []*Rule) {
+	sort.Slice(u.pages, func(i, j int) bool {
+		for _, rule := range rules {
+			if u.pages[i] == rule.first && u.pages[j] == rule.second {
+				return true
+			}
+			if u.pages[i] == rule.second && u.pages[j] == rule.first {
+				return false
+			}
+		}
+		return i < j
+	})
 }
 
 func solvePart1(input []string) interface{} {
@@ -133,8 +153,9 @@ func solvePart2(input []string) interface{} {
 			}
 
 			if !update.rulePasses(rule) {
-				update.updateForRule(rule)
+				update.updateForAllRules(rules)
 				fixed = true
+				break
 			}
 		}
 		if fixed {
