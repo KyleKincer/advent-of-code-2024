@@ -159,6 +159,37 @@ func (p *Puzzle) countMatches(t string) int {
 	return matches
 }
 
+func (p *Puzzle) countXmases() int {
+	var matches int
+	for i, row := range p.board {
+		if i < 1 || i > len(p.board)-2 {
+			continue
+		}
+		for j, cell := range row {
+			if j < 1 || j > len(row)-2 {
+				continue
+			}
+			if cell.letter == "A" {
+				upLeft := p.board[i-1][j-1]
+				downRight := p.board[i+1][j+1]
+
+				upRight := p.board[i-1][j+1]
+				downLeft := p.board[i+1][j-1]
+
+				if !((upLeft.letter == "S" && downRight.letter == "M") || (upLeft.letter == "M" && downRight.letter == "S")) {
+					continue
+				}
+
+				if !((upRight.letter == "S" && downLeft.letter == "M") || (upRight.letter == "M" && downLeft.letter == "S")) {
+					continue
+				}
+				matches++
+			}
+		}
+	}
+	return matches
+}
+
 func NewCrossword(lines []string, target string) *Crossword {
 	var crossword Crossword
 	crossword.puzzle = Puzzle{}
@@ -185,5 +216,7 @@ func solvePart1(input []string) interface{} {
 }
 
 func solvePart2(input []string) interface{} {
-	return nil
+	c := NewCrossword(input, "XMAS")
+	xmases := c.puzzle.countXmases()
+	return xmases
 }
